@@ -26,12 +26,8 @@ struct UPDATE;
 
 namespace nit
 {
-	//class Chart;
-	//class Fem1d;
-	//class Fuelcell;
 	class Graphics;
 	class Gui;
-	//class GuiMenu;
 	class Timer;
 
 	typedef FastDelegate2<void*, void*> Delegate;
@@ -90,23 +86,14 @@ namespace nit
 			void Update();
 
 			bool windowed, minimized;
-			//unsigned short mx, my; // mouse cooridnates
 			short dmx, dmy, wheel_delta;
 			unsigned int mstate; // mouse button state
-			//unsigned short width, height; // viewport size
-			EventQueue created, /*frame,*/ input, keyChar, keyDown, keyUp, mouseLButton, mouseMove, mouseWheel;
-			//shared_ptr<UPDATE> update;
+			EventQueue created, input, keyChar, keyDown, keyUp, mouseLButton, mouseMove, mouseWheel;
 			UPDATE* update;
 									
-			//shared_ptr<Fem1d> fem;
-			//shared_ptr<FEM::Mesh> fem_mesh;
-			//shared_ptr<Fuelcell> fuelcell;
 			shared_ptr<Graphics> gfx;
 			shared_ptr<Gui> gui;
-			//shared_ptr<GuiMenu> menu;
 			shared_ptr<Timer> timer;			
-
-			//bool vKeys[256], prevKeys[256];
 
 		protected:
 			inline void CalculateFps(const float dt);
@@ -114,7 +101,6 @@ namespace nit
 			static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 			HWND hWnd;			
-			//shared_ptr<Chart> chart;
 			float fps, num_frames, time_elapsed;
 			bool show_fps;
 	};
