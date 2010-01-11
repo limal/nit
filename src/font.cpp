@@ -21,7 +21,32 @@ Lukasz Wolnik lukasz.wolnik@o2.pl
 */
 
 /*
-Parts of loading binary .fnt class (classes: SCharDescr, CFontLoaderBinaryFormat) comes from AngelCode Tool Box Library Copyright (c) 2007-2008 Andreas Jonsson
+   FontLoader class is stripped, modified version of AngelCode Tool Box Library copyrighted by Andreas Jonsson.
+
+   AngelCode Tool Box Library
+   Copyright (c) 2007-2008 Andreas Jonsson
+  
+   This software is provided 'as-is', without any express or implied 
+   warranty. In no event will the authors be held liable for any 
+   damages arising from the use of this software.
+
+   Permission is granted to anyone to use this software for any 
+   purpose, including commercial applications, and to alter it and 
+   redistribute it freely, subject to the following restrictions:
+
+   1. The origin of this software must not be misrepresented; you 
+      must not claim that you wrote the original software. If you use
+      this software in a product, an acknowledgment in the product 
+      documentation would be appreciated but is not required.
+
+   2. Altered source versions must be plainly marked as such, and 
+      must not be misrepresented as being the original software.
+
+   3. This notice may not be removed or altered from any source 
+      distribution.
+  
+   Andreas Jonsson
+   andreas@angelcode.com
 */
 
 #include "StdAfx.h"
@@ -45,7 +70,6 @@ namespace nit
 			void LoadPage(int id, const char *pageFile);
 			void SetCommonInfo(int fontHeight, int base, int scaleW, int scaleH, int pages, bool isPacked);
 			void AddChar(int id, int x, int y, int w, int h, int xoffset, int yoffset, int xadvance, int page, int chnl);
-			//void AddKerningPair(int first, int second, int amount);
 
 			void ReadInfoBlock(int size);
 			void ReadCommonBlock(int size);
@@ -58,12 +82,22 @@ namespace nit
 			Font* font;
 	};
 
-} // end namespace
+}
+
+SCharDescr::SCharDescr() :
+	srcX(0),
+	srcY(0),
+	srcW(0),
+	srcH(0),
+	xOff(0),
+	yOff(0),
+	xAdv(0),
+	page(0)
+{
+}
 
 Font::Font(Graphics* gfx, char* filename, wchar_t* texture_filename) : gfx(gfx), update_time(0)
 {
-	//chars = new SCharDescr[512];
-
 	// effect
 	effect = shared_ptr<IEffect>(new IEffect(gfx, L"shaders/font.fx"));
 	effect->GetTechniqueByName("Render");
@@ -106,30 +140,15 @@ Font::Font(Graphics* gfx, char* filename, wchar_t* texture_filename) : gfx(gfx),
 
 Font::~Font()
 {
-	//delete[] chars;
 	delete[] colors;
 	delete[] v;
 	delete[] in;
-}
-
-SCharDescr* Font::GetChar(int id)
-{
-	/*std::map<int, SCharDescr*>::iterator it = chars.find(id);
-	if (it == chars.end())
-	{
-		return 0;
-	}
-
-	return it->second;*/
-	//return &chars[id];
-	return NULL;
 }
 
 unsigned int Font::GetWidth(const char* text)
 {
 	unsigned int width = 0;
 	const char* t = text;
-	//unsigned int count = text.length();
 	unsigned int count = strlen(t);
 
 	unsigned int n = 0;
@@ -137,12 +156,6 @@ unsigned int Font::GetWidth(const char* text)
 	{		
 		int charId = t[n];
 		CHARDESC& ch = chars[charId];
-		//SCharDescr *ch = GetChar(charId);
-
-		//if( ch == 0 )
-		//{
-		//	ch = &defChar;
-		//}
 
 		width += (unsigned int)ch.x_adv;
 		n++;
@@ -153,12 +166,6 @@ unsigned int Font::GetWidth(const char* text)
 
 void Font::Print(float t)
 {
-	/*if (update_time == 0)
-	{
-		//mesh->VertexDynamicDataFill(v, 0, c_num_ver);
-		//mesh->IndexDynamicDataFill(in, 0, c_num_ind);
-	}*/
-
 	D3DVIEWPORT9 vp;
 	gfx->GetDevice()->GetViewport(&vp);
 
@@ -167,19 +174,15 @@ void Font::Print(float t)
 	D3DXMatrixIdentity(&wvp);
 	D3DXMatrixOrthoOffCenterLH(&wvp, 0, (float)vp.Width, 0, (float)vp.Height, vp.MinZ, vp.MaxZ);
 
-	//gfx->device->BeginScene();
-
 	effect->SetTechnique("Render");
 	effect->SetMatrix("wvp", &wvp);
 	effect->SetTexture("gTex", gfx->GetTexture(1));
-	//effect->SetTexture("gTex", gfx->GetTexture("font"));
 
 	unsigned int num_passes = 0;
 	effect->Begin(&num_passes);
 	for (unsigned int i = 0; i < num_passes; i++)
 	{
 		effect->BeginPass(i);
-		//mesh->Render(gfx, c_num_ver, c_num_ind / 3);
 		gfx->GetDevice()->SetVertexDeclaration(D3DVERTEX::decl);
 		gfx->GetDevice()->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, c_num_ver, c_num_ind / 3, in, D3DFMT_INDEX16, v, sizeof(D3DVERTEX));
 		effect->EndPass();
@@ -190,22 +193,6 @@ void Font::Print(float t)
 	c_num_ind = 0;
 	c_v = v;
 	c_in = in;
-	/*update_time += t;
-
-	//if (update_time > 0.327f)
-	if (update_time > 0.0167f)
-	{
-		c_num_ver = 0;
-		c_num_ind = 0;
-
-		c_v = v;
-		c_in = in;
-
-		update_time = 0;
-	}*/
-
-	//gfx->device->EndScene();
-
 }
 
 void Font::Write(const char* text_, float x, float y, float z)
@@ -219,8 +206,6 @@ void Font::Write(const char* text_, float x, float y, float z)
 
 	float sx = x;
 	const float scale = 1.0f;
-	//const char* text = text_.c_str();
-	//int count = text_.length();
 	const char* text = text_;
 	int count = strlen(text_);
 
@@ -234,23 +219,17 @@ void Font::Write(const char* text_, float x, float y, float z)
 	float width = (float)gfx->GetWidth();
 	float height = (float)gfx->GetHeight();
 
-	//for (unsigned int n = 0; n < count; n++)
 	unsigned int cur = c_num_ver;
 	int n = -1;
 	while (n < count)
 	{
 		n++;
 
-		//unsigned int cur = c_num_ver + n * 4; // current vertex
 		unsigned int cur = c_num_ver;
 		int charId = text[n];
-		//SCharDescr *ch = GetChar(charId);
-		//SCharDescr* ch = &chars[charId];
-		//if( ch == 0 ) ch = &defChar;
 
 		if (charId == '~')
 		{
-			//int charId = text[n + 1];
 			color = &colors[text[n + 1] - 65];
 			n += 1;
 			continue;
@@ -260,23 +239,8 @@ void Font::Write(const char* text_, float x, float y, float z)
 		{
 			x = sx;
 			y -= scale * float(base) + 2.0f;
-			//n += 1;
 			continue;
 		}
-
-
-		// Map the center of the texel to the corners
-		// in order to get pixel perfect mapping
-		/*float u = (float(chars[charId].srcX)+0.0f) / scaleW;
-		float v = (float(chars[charId].srcY)+0.0f) / scaleH;
-		float u2 = u + float(chars[charId].srcW) / scaleW;
-		float v2 = v + float(chars[charId].srcH) / scaleH;
-
-		float a = scale * float(chars[charId].xAdv);
-		float w = scale * float(chars[charId].srcW);
-		float h = scale * float(chars[charId].srcH);
-		float ox = scale * float(chars[charId].xOff);
-		float oy = scale * float(chars[charId].yOff);*/
 
 		CHARDESC& ch = chars[charId];
 
@@ -300,9 +264,7 @@ void Font::Write(const char* text_, float x, float y, float z)
 		pv->pos.x = x + ox;
 		pv->pos.y = y - oy;
 		pv->pos.z = z;
-		//pv->normal.x = pv->normal.y = pv->normal.z = 1;
 		pv->normal = *color;
-
 		pv++;
 
 		pv->tex0.x = u2;
@@ -310,9 +272,7 @@ void Font::Write(const char* text_, float x, float y, float z)
 		pv->pos.x = x + w + ox;
 		pv->pos.y = y - oy;
 		pv->pos.z = z;
-		//pv->normal.x = pv->normal.y = pv->normal.z = 1;
 		pv->normal = *color;
-
 		pv++;
 
 		pv->tex0.x = u2;
@@ -320,11 +280,7 @@ void Font::Write(const char* text_, float x, float y, float z)
 		pv->pos.x = x + w + ox;
 		pv->pos.y = y - h - oy;
 		pv->pos.z = z;
-		//pv->normal.x = pv->normal.y = pv->normal.z = 1;
 		pv->normal = *color;
-
-		//pv->normal.z = 1.0f;
-
 		pv++;
 
 		pv->tex0.x = u;
@@ -332,11 +288,7 @@ void Font::Write(const char* text_, float x, float y, float z)
 		pv->pos.x = x + ox;
 		pv->pos.y = y - h - oy;
 		pv->pos.z = z;		
-		//pv->normal.x = pv->normal.y = pv->normal.z = 1;
 		pv->normal = *color;
-
-		//pv->normal.y = 1.0f;
-
 		pv++;		
 
 		*pin++ = cur;
@@ -348,21 +300,12 @@ void Font::Write(const char* text_, float x, float y, float z)
 		*pin++ = cur + 3;
 
 		x += a;
-		//if( charId == ' ' )
-		//	x += spacing;
-
-		//if( n < count )
-		//	x += AdjustForKerningPairs(charId, GetTextChar(text,n));
 		c_num_ver += 4;
 		c_num_ind += 6;
-		//n++;
 	}
 
 	c_v = pv;
 	c_in = pin;
-
-	//c_num_ver += count * 4;
-	//c_num_ind += count * 6;
 }
 
 
@@ -444,7 +387,7 @@ struct infoBlock
     BYTE paddingLeft;
     BYTE spacingHoriz;
     BYTE spacingVert;
-    BYTE outline;         // Added with version 2
+    BYTE outline; // Added with version 2
     char fontName[1];
 };
 #pragma pack(pop)
@@ -505,7 +448,6 @@ struct pagesBlock
 
 	for( int id = 0, pos = 0; pos < size; id++ )
 	{
-		//LoadPage(id, &blk->pageNames[pos], fontFile);
 		pos += 1 + (int)strlen(&blk->pageNames[pos]);
 	}
 
@@ -578,9 +520,6 @@ struct kerningPairsBlock
 
 	for( int n = 0; int(n*sizeof(kerningPairsBlock::kerningPair)) < size; n++ )
 	{
-		//AddKerningPair(blk->kerningPairs[n].first,
-		//               blk->kerningPairs[n].second,
-		//			   blk->kerningPairs[n].amount);
 	}
 
 	delete[] buffer;
@@ -592,47 +531,12 @@ void FontLoader::SetCommonInfo(int fontHeight, int base, int scaleW, int scaleH,
 	font->base = base;
 	font->scaleW = 1.0f / scaleW;
 	font->scaleH = 1.0f / scaleH;
-	//font->pages.resize(pages);
-	//for( int n = 0; n < pages; n++ )
-	//	font->pages[n] = 0;
 }
 
 void FontLoader::AddChar(int id, int x, int y, int w, int h, int xoffset, int yoffset, int xadvance, int page, int chnl)
 {
-	// Convert to a 4 element vector
-	// TODO: Does this depend on hardware? It probably does
-	if     ( chnl == 1 ) chnl = 0x00010000;  // Blue channel
-	else if( chnl == 2 ) chnl = 0x00000100;  // Green channel
-	else if( chnl == 4 ) chnl = 0x00000001;  // Red channel
-	else if( chnl == 8 ) chnl = 0x01000000;  // Alpha channel
-	else chnl = 0;
-
 	if( id >= 0 )
 	{
-		/*SCharDescr* ch = new SCharDescr;
-		ch->srcX = x;
-		ch->srcY = y;
-		ch->srcW = w;
-		ch->srcH = h;
-		ch->xOff = xoffset;
-		ch->yOff = yoffset;
-		ch->xAdv = xadvance;
-		ch->page = page;
-		ch->chnl = chnl;
-
-		font->chars.insert(std::map<int, SCharDescr*>::value_type(id, ch));*/
-		/*SCharDescr ch;
-		ch.srcX = x;
-		ch.srcY = y;
-		ch.srcW = w;
-		ch.srcH = h;
-		ch.xOff = xoffset;
-		ch.yOff = yoffset;
-		ch.xAdv = xadvance;
-		ch.page = page;
-		ch.chnl = chnl;
-
-		font->chars[id] = ch;*/
 		CHARDESC& ch = font->chars[id];
 		float scaleW = font->scaleW;
 		float scaleH = font->scaleH;

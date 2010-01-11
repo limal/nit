@@ -22,10 +22,6 @@ Lukasz Wolnik lukasz.wolnik@o2.pl
 
 #pragma once
 
-/*
-Parts of loading binary .fnt class (classes: SCharDescr, CFontLoaderBinaryFormat) comes from AngelCode Tool Box Library Copyright (c) 2007-2008 Andreas Jonsson
-*/
-
 struct D3DVERTEX;
 
 namespace nit
@@ -37,7 +33,7 @@ namespace nit
 
 	struct SCharDescr
 	{
-		SCharDescr() : srcX(0), srcY(0), srcW(0), srcH(0), xOff(0), yOff(0), xAdv(0), page(0) {}
+		SCharDescr();			
 
 		short srcX;
 		short srcY;
@@ -98,10 +94,7 @@ namespace nit
 			float scaleH;
 			SCharDescr defChar;
 
-			//SCharDescr* chars;
 			CHARDESC chars[256];
-			//SCharDescr chars[256];
 			float update_time;
-			//std::map<int, SCharDescr*> chars;
 	};
 }
