@@ -22,7 +22,7 @@ Lukasz Wolnik lukasz.wolnik@o2.pl
 
 #pragma once
 
-struct D3DVERTEX;
+struct nitVERTEX;
 
 namespace nit
 {	
@@ -68,9 +68,9 @@ namespace nit
 			shared_ptr<IEffect> effect;
 			shared_ptr<Mesh> mesh;
 
-			D3DVERTEX* v;
+			nitVERTEX* v;
 			WORD* in;
-			D3DVERTEX* c_v; // current vertex
+			nitVERTEX* c_v; // current vertex
 			WORD* c_in;
 			unsigned int c_num_ver;
 			unsigned int c_num_ind;

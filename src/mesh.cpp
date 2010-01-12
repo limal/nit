@@ -28,7 +28,7 @@ using namespace nit;
 
 // TODO Factory for dynamic/static classes
 
-D3DVERTEXSCREEN::D3DVERTEXSCREEN(const float x, const float y, const D3DCOLOR color) : post(x, y, 0, 1), tex0(0, 0), col(color)
+nitVERTEXSCREEN::nitVERTEXSCREEN(const float x, const float y, const D3DCOLOR color) : post(x, y, 0, 1), tex0(0, 0), col(color)
 {
 }
 
@@ -54,18 +54,18 @@ void Mesh::Initialize()
 	switch (vertex_type)
 	{
 		case POS_COL:
-			vertex_size = sizeof(D3DVERTEXCOLOR);
-			vertex_decl = D3DVERTEXCOLOR::decl;
+			vertex_size = sizeof(nitVERTEXCOLOR);
+			vertex_decl = nitVERTEXCOLOR::decl;
 			break;
 
 		case POS_NOR_TEX:
-			vertex_size = sizeof(D3DVERTEX);
-			vertex_decl = D3DVERTEX::decl;
+			vertex_size = sizeof(nitVERTEX);
+			vertex_decl = nitVERTEX::decl;
 			break;
 
 		case POS_SCREEN:
-			vertex_size = sizeof(D3DVERTEXSCREEN);
-			vertex_decl = D3DVERTEXSCREEN::decl;
+			vertex_size = sizeof(nitVERTEXSCREEN);
+			vertex_decl = nitVERTEXSCREEN::decl;
 			break;
 	}
 
@@ -127,8 +127,6 @@ void Mesh::OnResetDevice()
 	}
 }
 
-// STATIC DATA
-
 void Mesh::IndexStaticDataFill(const void *src, unsigned int offset, unsigned int num_ind)
 {
 	WORD* i;
@@ -140,16 +138,12 @@ void Mesh::IndexStaticDataFill(const void *src, unsigned int offset, unsigned in
 
 void Mesh::VertexStaticDataFill(const void *src, unsigned int offset, unsigned int num_ver)
 {
-	D3DVERTEX* v;
+	nitVERTEX* v;
 
 	vb->Lock(offset, num_ver * vertex_size, (void**)&v, 0);
 	memcpy(v, src, num_ver * vertex_size);
 	vb->Unlock();
 }
-
-// -------------
-
-// DYNAMIC DATA
 
 void Mesh::IndexDynamicDataFill(const void *src, unsigned int offset, unsigned int num_ind)
 {
@@ -168,15 +162,13 @@ void Mesh::IndexDynamicDataFill(const void *src, unsigned int offset, unsigned i
 
 void Mesh::VertexDynamicDataFill(const void *src, unsigned int offset, unsigned int num_ver)
 {
-	D3DVERTEX* v;
+	nitVERTEX* v;
 
 	//vb->Lock(offset, num_ver * vertex_size, (void**)&v, D3DLOCK_DISCARD);
 	vb->Lock(offset, num_ver * vertex_size, (void**)&v, D3DLOCK_NOOVERWRITE);
 	memcpy(v, src, num_ver * vertex_size);
 	vb->Unlock();
 }
-
-// -------------
 
 void Mesh::Render(Graphics* gfx, unsigned int num_ver, unsigned count)
 {

@@ -21,9 +21,3 @@ Lukasz Wolnik lukasz.wolnik@o2.pl
 */
 
 #include "StdAfx.h"
-
-/*#ifdef BOOST_NO_EXCEPTIONS
-void __cdecl boost::throw_exception(class std::exception const &)
-{
-}
-#endif*/

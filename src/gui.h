@@ -22,8 +22,8 @@ Lukasz Wolnik lukasz.wolnik@o2.pl
 
 #pragma once
 
-struct D3DVERTEXSCREEN;
-struct UPDATE;
+struct nitVERTEXSCREEN;
+struct nitUPDATE;
 
 namespace nit
 {	
@@ -31,15 +31,15 @@ namespace nit
 	class Graphics;
 	class Mesh;
 
-	class Gui : public nitGui
+	class IGui : public ::Gui
 	{
 		public:
-			Gui(UPDATE& update, Graphics* gfx);
-			~Gui();
+			IGui(nitUPDATE& update, Graphics* gfx);
+			~IGui();
 
-			void AddBitmap(unsigned int id, GUIBITMAP bitmap);
+			void AddBitmap(unsigned int id, nitGUIBITMAP bitmap);
 			void Command(unsigned int command_id);
-			void Draw(const D3DVERTEXSCREEN* vsrc, const unsigned int num_vsrc, const WORD* isrc, const unsigned int num_isrc);
+			void Draw(const nitVERTEXSCREEN* vsrc, const unsigned int num_vsrc, const WORD* isrc, const unsigned int num_isrc);
 			unsigned int GetTextWidth(char* text);
 			void Text(const char* text, float x, float y);
 			unsigned int GetHeight();
@@ -49,8 +49,6 @@ namespace nit
 			int GetMouseX();
 			int GetMouseY();
 			unsigned int GetTextureSize() { return tex_size; }
-			//void MouseMove(unsigned int wParam, unsigned int lParam);
-			//void Render(float z);
 			void Render(Graphics* gfx, float t);
 			void RenderBitmap(unsigned int key, const float x, const float y, const float z);
 			void SetActive(unsigned int id) { active = id; }
@@ -64,20 +62,19 @@ namespace nit
 			void Initialize();
 			void LoadBitmaps();
 
-			UPDATE& update;
+			nitUPDATE& update;
 			Graphics* gfx;
 			shared_ptr<IEffect> effect;
 			unsigned int tex_size;
-			//shared_ptr<Mesh> mesh;
 
-			D3DVERTEXSCREEN* vertices, * v;
+			nitVERTEXSCREEN* vertices, * v;
 			WORD* indices, * k;
 			unsigned int num_ver;
 			unsigned int num_ind;
 
 			D3DXVECTOR2 pos;
 
-			std::map<unsigned int, GUIBITMAP> bitmaps;
+			std::map<unsigned int, nitGUIBITMAP> bitmaps;
 
 			enum
 			{

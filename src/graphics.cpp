@@ -28,9 +28,9 @@ Lukasz Wolnik lukasz.wolnik@o2.pl
 
 using namespace nit;
 
-IDirect3DVertexDeclaration9* D3DVERTEX::decl = 0;
-IDirect3DVertexDeclaration9* D3DVERTEXCOLOR::decl = 0;
-IDirect3DVertexDeclaration9* D3DVERTEXSCREEN::decl = 0;
+IDirect3DVertexDeclaration9* nitVERTEX::decl = 0;
+IDirect3DVertexDeclaration9* nitVERTEXCOLOR::decl = 0;
+IDirect3DVertexDeclaration9* nitVERTEXSCREEN::decl = 0;
 
 Graphics::Graphics(bool windowed) :
 	windowed(windowed)
@@ -51,16 +51,16 @@ void Graphics::InitializeVertexDeclarations(Graphics* gfx)
 {
 	IDirect3DDevice9* device = gfx->GetDevice();
 
-	// D3DVERTEXCOLOR
+	// nitVERTEXCOLOR
 	D3DVERTEXELEMENT9 elements_d3dvertexcolor[] =
 	{
 		{0,  0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
 		{0, 12, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0},
 		D3DDECL_END()
 	};
-	device->CreateVertexDeclaration(elements_d3dvertexcolor, &D3DVERTEXCOLOR::decl);
+	device->CreateVertexDeclaration(elements_d3dvertexcolor, &nitVERTEXCOLOR::decl);
 
-	// D3DVERTEXSCREEN
+	// nitVERTEXSCREEN
 	D3DVERTEXELEMENT9 elements_d3dvertexscreen[] =
 	{
 		{0,  0, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITIONT, 0},
@@ -68,9 +68,9 @@ void Graphics::InitializeVertexDeclarations(Graphics* gfx)
 		{0, 24, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0},
 		D3DDECL_END()
 	};
-	device->CreateVertexDeclaration(elements_d3dvertexscreen, &D3DVERTEXSCREEN::decl);
+	device->CreateVertexDeclaration(elements_d3dvertexscreen, &nitVERTEXSCREEN::decl);
 
-	// D3DVERTEX
+	// nitVERTEX
 	D3DVERTEXELEMENT9 elements_d3dvertex[] =
 	{
 		{0,  0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
@@ -78,17 +78,17 @@ void Graphics::InitializeVertexDeclarations(Graphics* gfx)
 		{0, 24, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
 		D3DDECL_END()
 	};
-	device->CreateVertexDeclaration(elements_d3dvertex, &D3DVERTEX::decl);
+	device->CreateVertexDeclaration(elements_d3dvertex, &nitVERTEX::decl);
 }
 
 void Graphics::SetD3DVERTEXDeclaration()
 {
-	device->SetVertexDeclaration(D3DVERTEX::decl);
+	device->SetVertexDeclaration(nitVERTEX::decl);
 }
 
 void Graphics::SetD3DVERTEXCOLORDeclaration()
 {
-	device->SetVertexDeclaration(D3DVERTEXCOLOR::decl);
+	device->SetVertexDeclaration(nitVERTEXCOLOR::decl);
 }
 
 void Graphics::AddOnLostDevice(void* delegate)
@@ -183,11 +183,6 @@ HRESULT Graphics::CreateD3D9(unsigned int width, unsigned int height, HWND hWnd)
 
 	textures = shared_ptr<Textures>(new Textures(this));
 
-	// Create font
-	//D3DXCreateFont(device.get(), 16, 0, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, PROOF_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Arial", &dfont);
-
-	// Create bitmap font
-	//font = shared_ptr<Font>(new Font(this, "data/sans14pt.fnt", L"data/sans14pt_0.dds"));
 	font = shared_ptr<Font>(new Font(this, "data/calibri14px.fnt", L"data/calibri14px_0.dds"));
 	//render_texture = shared_ptr<RenderTexture>(new RenderTexture(this, 1, false, D3DFMT_X8R8G8B8, true, D3DFMT_D24S8));
 	D3DVIEWPORT9 viewport;
@@ -212,21 +207,11 @@ IDirect3DDevice9* Graphics::GetDevice()
 	return device;
 }
 
-/*unsigned int Graphics::GetHeight()
-{
-	return d3dpp.BackBufferHeight;
-}*/
-
 void Graphics::GetSize(unsigned int* width, unsigned int* height)
 {
 	*width = d3dpp.BackBufferWidth;
 	*height = d3dpp.BackBufferHeight;
 }
-
-/*unsigned int Graphics::GetWidth()
-{
-	return d3dpp.BackBufferWidth;
-}*/
 
 IDirect3DTexture9* Graphics::GetTexture(unsigned int id)
 //IDirect3DTexture9* Graphics::GetTexture(std::string name)
@@ -274,7 +259,6 @@ bool Graphics::IsDeviceLost()
 	return result;
 }
 
-//void Graphics::LoadTexture(std::string name, std::wstring filename)
 void Graphics::LoadTexture(unsigned int id, wchar_t* filename)
 {
 	textures->Load(id, filename);
@@ -307,23 +291,11 @@ void Graphics::Write(const char* text_, float x, float y, float z)
 
 void Graphics::Render(float dt)
 {	
-	//device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(255, 255, 255), 0.0f, 0);
 	device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(115, 115, 115), 1.0f, 0);
 
 	device->BeginScene();
-
 	render(this, dt);
-
-	//HR(device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(115, 115, 115), 1.0f, 0));
-	/*gui->SetPosition(32, 32);
-	gui->Render(0.5f);
-	gui->SetPosition((float)app.mx - 320, (float)app.my - 240);
-	gui->SetPosition(240, 240);
-	gui->Render(0.4f);*/
-	//gui->Render();
-
 	Print(dt);
-
 	device->EndScene();
 	
 	device->Present(0, 0, 0, 0);

@@ -22,7 +22,7 @@ Lukasz Wolnik lukasz.wolnik@o2.pl
 
 #pragma once
 
-struct D3DVERTEX;
+struct nitVERTEX;
 
 namespace nit
 {
@@ -38,7 +38,7 @@ namespace nit
 
 
 		protected:
-			std::vector<D3DVERTEX> vertices;
+			std::vector<nitVERTEX> vertices;
 			std::vector<WORD> indices;
 	};
 }

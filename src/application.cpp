@@ -38,8 +38,8 @@ IApplication::IApplication(const unsigned int width, const unsigned int height, 
 	hWnd = NULL;
 	minimized = false;
 
-	update = new UPDATE();
-	memset(update, 0, sizeof(UPDATE));
+	update = new nitUPDATE();
+	memset(update, 0, sizeof(nitUPDATE));
 	update->width = width;
 	update->height = height;
 
@@ -152,7 +152,7 @@ void IApplication::Update()
 	update->key_pressed = 0;
 }
 
-Gui& IApplication::GetGui()
+IGui& IApplication::GetGui()
 {
 	//return gfx->GetGui();
 	return *gui;
@@ -305,7 +305,7 @@ void IApplication::Render(Graphics* gfx, float t)
 	}
 }
 
-UPDATE* IApplication::Create(wchar_t* title, int nShowCmd)
+nitUPDATE* IApplication::Create(wchar_t* title, int nShowCmd)
 {
 	CreateMainWindow(title, nShowCmd);
 

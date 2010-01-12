@@ -36,7 +36,7 @@ IModel::~IModel()
 
 void IModel::AddTriangle(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3)
 {
-	D3DVERTEX v;
+	nitVERTEX v;
 
 	v.normal.x = v.normal.y = v.normal.z = 0;
 	v.tex0.x = v.tex0.y = 0;
@@ -65,8 +65,8 @@ void IModel::AddTriangle(float x1, float y1, float z1, float x2, float y2, float
 
 void IModel::Draw(IDirect3DDevice9* device)
 {
-	device->SetVertexDeclaration(D3DVERTEX::decl);
-	device->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vertices.size(), indices.size() / 3, &indices.front(), D3DFMT_INDEX16, &vertices.front(), sizeof(D3DVERTEX));
+	device->SetVertexDeclaration(nitVERTEX::decl);
+	device->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vertices.size(), indices.size() / 3, &indices.front(), D3DFMT_INDEX16, &vertices.front(), sizeof(nitVERTEX));
 }
 
 void IModel::Load(wchar_t* filename)

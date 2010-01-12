@@ -28,30 +28,30 @@ Lukasz Wolnik lukasz.wolnik@o2.pl
 
 using namespace nit;
 
-Gui::Gui(UPDATE& update, Graphics* gfx) : update(update), gfx(gfx), pos(0, 0)
+IGui::IGui(nitUPDATE& update, Graphics* gfx) : update(update), gfx(gfx), pos(0, 0)
 {
 	Initialize();
 }
 
-Gui::~Gui()
+IGui::~IGui()
 {
 	delete[] vertices;
 	delete[] indices;
 }
 
-void Gui::AddBitmap(unsigned int id, GUIBITMAP bitmap)
+void IGui::AddBitmap(unsigned int id, nitGUIBITMAP bitmap)
 {
 	bitmaps[id] = bitmap;
 }
 
-void Gui::Command(unsigned int command_id)
+void IGui::Command(unsigned int command_id)
 {
 	update.command = command_id;
 }
 
-void Gui::Draw(const D3DVERTEXSCREEN* vsrc, const unsigned int num_vsrc, const WORD* isrc, const unsigned int num_isrc)
+void IGui::Draw(const nitVERTEXSCREEN* vsrc, const unsigned int num_vsrc, const WORD* isrc, const unsigned int num_isrc)
 {
-	memcpy(v, vsrc, num_vsrc * sizeof(D3DVERTEXSCREEN));
+	memcpy(v, vsrc, num_vsrc * sizeof(nitVERTEXSCREEN));
 	//memcpy(k, isrc, num_isrc * sizeof(WORD));
 	for (unsigned int i = 0; i < num_isrc; i++)
 	{
@@ -65,32 +65,32 @@ void Gui::Draw(const D3DVERTEXSCREEN* vsrc, const unsigned int num_vsrc, const W
 	num_ind += num_isrc;
 }
 
-unsigned int Gui::GetHeight()
+unsigned int IGui::GetHeight()
 {
 	return gfx->GetHeight();
 }
 
-int Gui::GetMouseX()
+int IGui::GetMouseX()
 {
 	return update.mx;
 }
 
-int Gui::GetMouseY()
+int IGui::GetMouseY()
 {
 	return update.my;
 }
 
-unsigned int Gui::GetTextWidth(char* text)
+unsigned int IGui::GetTextWidth(char* text)
 {
 	return gfx->GetTextWidth(text);
 }
 
-unsigned int Gui::GetWidth()
+unsigned int IGui::GetWidth()
 {
 	return gfx->GetWidth();
 }
 
-void Gui::Initialize()
+void IGui::Initialize()
 {
 	active = hot = 0;
 	mouse_down = mouse_up = false;
@@ -100,10 +100,10 @@ void Gui::Initialize()
 	effect = shared_ptr<IEffect>(new IEffect(gfx, L"shaders/gui.fx"));
 	effect->GetParameterByName("gTex");
 
-	unsigned int max_ver = Gui::MAX_VERTICES;
+	unsigned int max_ver = IGui::MAX_VERTICES;
 	unsigned int max_ind = max_ver * 6 /4;
 
-	vertices = new D3DVERTEXSCREEN[max_ver];
+	vertices = new nitVERTEXSCREEN[max_ver];
 	indices = new WORD[max_ind];
 	v = vertices;
 	k = indices;
@@ -111,12 +111,12 @@ void Gui::Initialize()
 
 	LoadBitmaps();
 
-	gfx->AddOnRender(&MakeDelegate(this, &Gui::Render), 50);
+	gfx->AddOnRender(&MakeDelegate(this, &IGui::Render), 50);
 }
 
-void Gui::LoadBitmaps()
+void IGui::LoadBitmaps()
 {
-	GUIBITMAP bm;
+	nitGUIBITMAP bm;
 
 	// load from file
 
@@ -130,7 +130,7 @@ void Gui::LoadBitmaps()
 	//bitmaps[BITMAP_NODE_1] = bm;
 }
 
-void Gui::Render(Graphics* gfx, float t)
+void IGui::Render(Graphics* gfx, float t)
 {
 
 
@@ -141,8 +141,8 @@ void Gui::Render(Graphics* gfx, float t)
 	for (unsigned int i = 0; i < num_passes; i++)
 	{
 		effect->BeginPass(i);
-		gfx->GetDevice()->SetVertexDeclaration(D3DVERTEXSCREEN::decl);
-		gfx->GetDevice()->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, num_ver - 0, (num_ind - 0) / 3, indices, D3DFMT_INDEX16, vertices, sizeof(D3DVERTEXSCREEN));
+		gfx->GetDevice()->SetVertexDeclaration(nitVERTEXSCREEN::decl);
+		gfx->GetDevice()->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, num_ver - 0, (num_ind - 0) / 3, indices, D3DFMT_INDEX16, vertices, sizeof(nitVERTEXSCREEN));
 		
 		effect->EndPass();
 	}
@@ -161,21 +161,21 @@ void Gui::Render(Graphics* gfx, float t)
 	num_ind = 0;
 }
 
-void Gui::RenderBitmap(unsigned int key, const float x, const float y, float z)
+void IGui::RenderBitmap(unsigned int key, const float x, const float y, float z)
 {
-	D3DVERTEXSCREEN ver[4];
+	nitVERTEXSCREEN ver[4];
 	WORD ind[6];
 
-	D3DVERTEXSCREEN* v = ver;
+	nitVERTEXSCREEN* v = ver;
 	WORD* k = ind;
 
-	GUIBITMAP& bm = bitmaps[key];
+	nitGUIBITMAP& bm = bitmaps[key];
 	D3DCOLOR col = bm.col;
 
-	*v++ = D3DVERTEXSCREEN(x - 0.5f, y - 0.5f, z, bm.u1, bm.v1, col);
-	*v++ = D3DVERTEXSCREEN(x + bm.width - 0.5f, y - 0.5f, z, bm.u2, bm.v1, col);
-	*v++ = D3DVERTEXSCREEN(x + bm.width - 0.5f, y + bm.height - 0.5f, z, bm.u2, bm.v2, col);
-	*v++ = D3DVERTEXSCREEN(x - 0.5f, y + bm.height - 0.5f, z, bm.u1, bm.v2, col);
+	*v++ = nitVERTEXSCREEN(x - 0.5f, y - 0.5f, z, bm.u1, bm.v1, col);
+	*v++ = nitVERTEXSCREEN(x + bm.width - 0.5f, y - 0.5f, z, bm.u2, bm.v1, col);
+	*v++ = nitVERTEXSCREEN(x + bm.width - 0.5f, y + bm.height - 0.5f, z, bm.u2, bm.v2, col);
+	*v++ = nitVERTEXSCREEN(x - 0.5f, y + bm.height - 0.5f, z, bm.u1, bm.v2, col);
 
 	*k++ = 0; *k++ = 1; *k++ = 2;
 	*k++ = 2; *k++ = 3; *k++ = 0;
@@ -183,13 +183,13 @@ void Gui::RenderBitmap(unsigned int key, const float x, const float y, float z)
 	Draw(ver, 4, ind, 6);
 }
 
-void Gui::SetPosition(const float x, const float y)
+void IGui::SetPosition(const float x, const float y)
 {
 	pos.x = x;
 	pos.y = y;
 }
 
-void Gui::Text(const char* text, float x, float y)
+void IGui::Text(const char* text, float x, float y)
 {
 	gfx->Write(text, x, y);
 }

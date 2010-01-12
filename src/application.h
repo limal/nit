@@ -22,12 +22,12 @@ Lukasz Wolnik lukasz.wolnik@o2.pl
 
 #pragma once
 
-struct UPDATE;
+struct nitUPDATE;
 
 namespace nit
 {
 	class Graphics;
-	class Gui;
+	class IGui;
 	class Timer;
 
 	typedef FastDelegate2<void*, void*> Delegate;
@@ -59,11 +59,11 @@ namespace nit
 			void AddOnCreated(void* delegate);
 			void AddRenderFunction(void* delegate, unsigned int priority);
 			void CenterWindow(HWND hWnd, int _x = 0, int _y = 0);
-			UPDATE* Create(wchar_t* title, int nShowCmd);
+			nitUPDATE* Create(wchar_t* title, int nShowCmd);
 			bool CreateMainWindow(wchar_t* title, int cmdShow);			
 			void DisplayError(wstring message);
 			nitGraphics* GetGraphics() { return (nitGraphics*)gfx.get(); }
-			Gui& GetGui();
+			IGui& GetGui();
 			HWND GetWindow() { return hWnd; }
 			void Initialize();
 			void Input(WPARAM wParam, LPARAM lParam);
@@ -89,10 +89,10 @@ namespace nit
 			short dmx, dmy, wheel_delta;
 			unsigned int mstate; // mouse button state
 			EventQueue created, input, keyChar, keyDown, keyUp, mouseLButton, mouseMove, mouseWheel;
-			UPDATE* update;
+			nitUPDATE* update;
 									
 			shared_ptr<Graphics> gfx;
-			shared_ptr<Gui> gui;
+			shared_ptr<IGui> gui;
 			shared_ptr<Timer> timer;			
 
 		protected:

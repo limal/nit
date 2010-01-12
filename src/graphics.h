@@ -102,11 +102,9 @@ namespace nit
 			void GetSize(unsigned int* width, unsigned int* height);
 			unsigned int GetTextWidth(char* text);
 			inline unsigned int GetWidth() { return d3dpp.BackBufferWidth; }
-			//IDirect3DTexture9* GetTexture(std::string name);
 			IDirect3DTexture9* GetTexture(unsigned int id);
 			HRESULT Initialize(unsigned int width, unsigned int height, HWND hWnd);
 			bool IsDeviceLost();
-			//void LoadTexture(std::string name, std::wstring filename);
 			void LoadTexture(unsigned int id, wchar_t* filename);
 			void Print(float t);
 			void Render(float dt);
@@ -116,7 +114,6 @@ namespace nit
 			void SetD3DVERTEXDeclaration();
 			void SetD3DVERTEXCOLORDeclaration();
 			void Write(const char* text_, float x, float y, float z = 0);
-			//D3DXMATRIX proj, view;
 			//shared_ptr<RenderTexture> render_texture;
 			
 

@@ -21,7 +21,7 @@ Lukasz Wolnik lukasz.wolnik@o2.pl
 */
 
 /*
-   FontLoader class is stripped, modified version of AngelCode Tool Box Library copyrighted by Andreas Jonsson.
+   FontLoader class is a stripped, modified version of AngelCode Tool Box Library copyrighted by Andreas Jonsson.
 
    AngelCode Tool Box Library
    Copyright (c) 2007-2008 Andreas Jonsson
@@ -108,7 +108,7 @@ Font::Font(Graphics* gfx, char* filename, wchar_t* texture_filename) : gfx(gfx),
 	num_ver = 4 * MAX_CHARS;
 	num_ind = 6 * MAX_CHARS;
 
-	v = new D3DVERTEX[num_ver];
+	v = new nitVERTEX[num_ver];
 	in = new WORD[num_ind];
 	c_num_ver = 0;
 	c_num_ind = 0;
@@ -183,8 +183,8 @@ void Font::Print(float t)
 	for (unsigned int i = 0; i < num_passes; i++)
 	{
 		effect->BeginPass(i);
-		gfx->GetDevice()->SetVertexDeclaration(D3DVERTEX::decl);
-		gfx->GetDevice()->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, c_num_ver, c_num_ind / 3, in, D3DFMT_INDEX16, v, sizeof(D3DVERTEX));
+		gfx->GetDevice()->SetVertexDeclaration(nitVERTEX::decl);
+		gfx->GetDevice()->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, c_num_ver, c_num_ind / 3, in, D3DFMT_INDEX16, v, sizeof(nitVERTEX));
 		effect->EndPass();
 	}
 	effect->End();
@@ -211,7 +211,7 @@ void Font::Write(const char* text_, float x, float y, float z)
 
 	y += scale * float(base);
 
-	D3DVERTEX* pv = c_v;
+	nitVERTEX* pv = c_v;
 	WORD* pin = c_in;
 
 	D3DXVECTOR3* color = &colors[0];

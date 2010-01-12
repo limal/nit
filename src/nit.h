@@ -42,7 +42,7 @@ struct nitGraphics
 	virtual void Write(const char* text_, float x, float y, float z = 0) = 0;
 };
 
-struct UPDATE
+struct nitUPDATE
 {
 	bool vKeys[256];
 	bool prevKeys[256];
@@ -59,7 +59,7 @@ struct UPDATE
 	void* gui;
 };
 
-struct D3DVERTEXCOLOR
+struct nitVERTEXCOLOR
 {
 	D3DXVECTOR3 pos;
 	D3DCOLOR col;
@@ -67,13 +67,13 @@ struct D3DVERTEXCOLOR
 	static IDirect3DVertexDeclaration9* decl;
 };
 
-struct D3DVERTEXSCREEN
+struct nitVERTEXSCREEN
 {
-	D3DVERTEXSCREEN()
+	nitVERTEXSCREEN()
 	{
 	}
-	D3DVERTEXSCREEN(const float x, const float y, const D3DCOLOR color);
-	D3DVERTEXSCREEN(const float x, const float y, const float z, const float u, const float v, const D3DCOLOR color)
+	nitVERTEXSCREEN(const float x, const float y, const D3DCOLOR color);
+	nitVERTEXSCREEN(const float x, const float y, const float z, const float u, const float v, const D3DCOLOR color)
 	{
 		post.x = x; post.y = y; post.z = z; post.w = 1.0f;
 		tex0.x = u; tex0.y = v;
@@ -87,7 +87,7 @@ struct D3DVERTEXSCREEN
 	static IDirect3DVertexDeclaration9* decl;
 };
 
-struct D3DVERTEX
+struct nitVERTEX
 {
 	D3DXVECTOR3 pos;
 	D3DXVECTOR3 normal;
@@ -96,7 +96,7 @@ struct D3DVERTEX
 	static IDirect3DVertexDeclaration9* decl;
 };
 
-struct GUIBITMAP
+struct nitGUIBITMAP
 {
 	float u1, v1, u2, v2;
 	float width, height;
@@ -107,7 +107,7 @@ struct Application
 {
 	virtual void AddOnCreated(void* delegate) = 0;
 	virtual void AddRenderFunction(void* delegate, unsigned int priority) = 0;
-	virtual UPDATE* Create(wchar_t* title, int nShowCmd) = 0;
+	virtual nitUPDATE* Create(wchar_t* title, int nShowCmd) = 0;
 	virtual nitGraphics* GetGraphics() = 0;
 	virtual void Update() = 0;
 };
@@ -140,16 +140,17 @@ class Model
 
 extern "C" nitAPI Model* APIENTRY nitCreateModel();
 
-struct nitGui
+class Gui
 {
-	virtual void AddBitmap(unsigned int id, GUIBITMAP bitmap) = 0;
-	virtual void Draw(const D3DVERTEXSCREEN* vsrc, const unsigned int num_vsrc, const WORD* isrc, const unsigned int num_isrc) = 0;
-	virtual unsigned int GetActive() = 0;
-	virtual unsigned int GetHot() = 0;
-	virtual unsigned int GetTextureSize() = 0;
-	virtual void SetActive(unsigned int id) = 0;
-	virtual void SetHot(unsigned int id) = 0;
-	virtual void RenderBitmap(unsigned int key, const float x, const float y, const float z) = 0;
+	public:
+		virtual void AddBitmap(unsigned int id, nitGUIBITMAP bitmap) = 0;
+		virtual void Draw(const nitVERTEXSCREEN* vsrc, const unsigned int num_vsrc, const WORD* isrc, const unsigned int num_isrc) = 0;
+		virtual unsigned int GetActive() = 0;
+		virtual unsigned int GetHot() = 0;
+		virtual unsigned int GetTextureSize() = 0;
+		virtual void SetActive(unsigned int id) = 0;
+		virtual void SetHot(unsigned int id) = 0;
+		virtual void RenderBitmap(unsigned int key, const float x, const float y, const float z) = 0;
 };
 
 extern "C" nitAPI Application* APIENTRY nitCreateApplication(unsigned int width, unsigned int height, bool windowed, bool show_fps);

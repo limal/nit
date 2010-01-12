@@ -40,7 +40,7 @@ void Loadernit::Initialize()
 {
 }
 
-void Loadernit::Load(wchar_t* filename, std::vector<D3DVERTEX>& vertices, std::vector<WORD>& indices)
+void Loadernit::Load(wchar_t* filename, std::vector<nitVERTEX>& vertices, std::vector<WORD>& indices)
 {
 	float* s(new float[65536]);
 	float* t(new float[65536]);
@@ -71,7 +71,7 @@ void Loadernit::Load(wchar_t* filename, std::vector<D3DVERTEX>& vertices, std::v
 			float x, y, z;
 			ss >> x >> y >> z;
 
-			D3DVERTEX v;
+			nitVERTEX v;
 			v.pos = D3DXVECTOR3(x, y, z);
 			v.tex0 = D3DXVECTOR2(0, 0);
 			v.normal = D3DXVECTOR3(0, 0, 0);

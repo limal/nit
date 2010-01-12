@@ -22,7 +22,7 @@ Lukasz Wolnik lukasz.wolnik@o2.pl
 
 #pragma once
 
-struct D3DVERTEX;
+struct nitVERTEX;
 
 namespace nit
 {
@@ -32,7 +32,7 @@ namespace nit
 			Loadernit();
 			~Loadernit();
 
-			void Load(wchar_t* filename, std::vector<D3DVERTEX>& vertices, std::vector<WORD>& indices);
+			void Load(wchar_t* filename, std::vector<nitVERTEX>& vertices, std::vector<WORD>& indices);
 
 		protected:
 			void Initialize();
