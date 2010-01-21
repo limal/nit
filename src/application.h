@@ -53,17 +53,19 @@ namespace nit
 	class IApplication : public Application
 	{
 		public:
-			IApplication(const unsigned int width, const unsigned int height, const bool windowed, const bool show_fps);
+			IApplication(const unsigned int width, const unsigned int height, const bool antialiasing, const bool windowed, const bool show_fps);
 			~IApplication();
 
 			void AddOnCreated(void* delegate);
 			void AddRenderFunction(void* delegate, unsigned int priority);
+			void AddUpdatingFunction(void* delegate);
 			void CenterWindow(HWND hWnd, int _x = 0, int _y = 0);
 			nitUPDATE* Create(wchar_t* title, int nShowCmd);
 			bool CreateMainWindow(wchar_t* title, int cmdShow);			
 			void DisplayError(wstring message);
 			nitGraphics* GetGraphics() { return (nitGraphics*)gfx.get(); }
 			IGui& GetGui();
+			nitUPDATE* GetUPDATE() { return update; }
 			HWND GetWindow() { return hWnd; }
 			void Initialize();
 			void Input(WPARAM wParam, LPARAM lParam);
@@ -85,10 +87,10 @@ namespace nit
 			void SetCapture();
 			void Update();
 
-			bool windowed, minimized;
+			bool antialiasing, windowed, minimized;
 			short dmx, dmy, wheel_delta;
 			unsigned int mstate; // mouse button state
-			EventQueue created, input, keyChar, keyDown, keyUp, mouseLButton, mouseMove, mouseWheel;
+			EventQueue created, input, keyChar, keyDown, keyUp, mouseLButton, mouseMove, mouseWheel, updating;
 			nitUPDATE* update;
 									
 			shared_ptr<Graphics> gfx;

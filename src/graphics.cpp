@@ -32,9 +32,11 @@ IDirect3DVertexDeclaration9* nitVERTEX::decl = 0;
 IDirect3DVertexDeclaration9* nitVERTEXCOLOR::decl = 0;
 IDirect3DVertexDeclaration9* nitVERTEXSCREEN::decl = 0;
 
-Graphics::Graphics(bool windowed) :
+Graphics::Graphics(const bool antialiasing, const bool windowed) :
+	antialiasing(antialiasing),
 	windowed(windowed)
 {
+	clear_color = D3DCOLOR_XRGB(96, 96, 96);
 }
 
 Graphics::~Graphics()
@@ -81,12 +83,12 @@ void Graphics::InitializeVertexDeclarations(Graphics* gfx)
 	device->CreateVertexDeclaration(elements_d3dvertex, &nitVERTEX::decl);
 }
 
-void Graphics::SetD3DVERTEXDeclaration()
+void Graphics::SetnitVERTEXDeclaration()
 {
 	device->SetVertexDeclaration(nitVERTEX::decl);
 }
 
-void Graphics::SetD3DVERTEXCOLORDeclaration()
+void Graphics::SetnitVERTEXCOLORDeclaration()
 {
 	device->SetVertexDeclaration(nitVERTEXCOLOR::decl);
 }
@@ -118,8 +120,12 @@ void Graphics::BeginRTT(std::string texname)
 
 HRESULT Graphics::CreateD3D9(unsigned int width, unsigned int height, HWND hWnd)
 {
-	D3DMULTISAMPLE_TYPE multisample_type = D3DMULTISAMPLE_4_SAMPLES;
-	//D3DMULTISAMPLE_TYPE multisample_type = D3DMULTISAMPLE_NONE;
+	D3DMULTISAMPLE_TYPE multisample_type = D3DMULTISAMPLE_NONE;
+
+	if (antialiasing)
+	{
+		multisample_type = D3DMULTISAMPLE_4_SAMPLES;
+	}
 	DWORD multisampling_quality = 0;
 
 	//d3d = shared_ptr<IDirect3D9>(Direct3DCreate9(D3D_SDK_VERSION), mem_fn(&IDirect3D9::Release));
@@ -291,7 +297,7 @@ void Graphics::Write(const char* text_, float x, float y, float z)
 
 void Graphics::Render(float dt)
 {	
-	device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(115, 115, 115), 1.0f, 0);
+	device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, clear_color, 1.0f, 0);
 
 	device->BeginScene();
 	render(this, dt);

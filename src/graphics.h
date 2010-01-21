@@ -89,7 +89,7 @@ namespace nit
 	class Graphics : public nitGraphics
 	{
 		public:
-			Graphics(bool windowed);
+			Graphics(bool antialiasing, bool windowed);
 			~Graphics();
 
 			void AddOnLostDevice(void* delegate);
@@ -111,8 +111,9 @@ namespace nit
 			void Reset();
 			void Release();
 			void Resize(unsigned int width, unsigned int height);
-			void SetD3DVERTEXDeclaration();
-			void SetD3DVERTEXCOLORDeclaration();
+			void SetnitVERTEXDeclaration();
+			void SetnitVERTEXCOLORDeclaration();
+			void SetClearColor(D3DCOLOR color) { clear_color = color; }
 			void Write(const char* text_, float x, float y, float z = 0);
 			//shared_ptr<RenderTexture> render_texture;
 			
@@ -122,7 +123,8 @@ namespace nit
 			static void InitializeVertexDeclarations(Graphics* gfx);
 			bool SetMultisampling(const D3DMULTISAMPLE_TYPE multisample_type, const D3DFORMAT buffer_format, const D3DFORMAT depth_format, DWORD& quality);
 
-			bool windowed;
+			D3DCOLOR clear_color;
+			bool antialiasing, windowed;
 			RenderQueue render;
 			LostQueue on_lost_device, on_reset_device;			
 

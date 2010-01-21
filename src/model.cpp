@@ -34,6 +34,23 @@ IModel::~IModel()
 {
 }
 
+void IModel::AddVertex(float x, float y, float z, D3DCOLOR color)
+{
+	nitVERTEXCOLOR v;
+
+	v.pos.x = x;
+	v.pos.y = y;
+	v.pos.z = z;
+	v.col = color;
+	vertices_color.push_back(v);
+}
+
+void IModel::AddLine(float x1, float y1, float z1, float x2, float y2, float z2, D3DCOLOR color1, D3DCOLOR color2)
+{
+	AddVertex(x1, y1, z1, color1);
+	AddVertex(x2, y2, z2, color2);
+}
+
 void IModel::AddTriangle(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3)
 {
 	nitVERTEX v;
@@ -63,15 +80,34 @@ void IModel::AddTriangle(float x1, float y1, float z1, float x2, float y2, float
 	indices.push_back(current + 2);
 }
 
-void IModel::Draw(IDirect3DDevice9* device)
+void IModel::DrawVertex(IDirect3DDevice9* device)
 {
-	device->SetVertexDeclaration(nitVERTEX::decl);
-	device->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vertices.size(), indices.size() / 3, &indices.front(), D3DFMT_INDEX16, &vertices.front(), sizeof(nitVERTEX));
+	//device->SetVertexDeclaration(nitVERTEX::decl);
+	device->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vertices.size(), indices.size() / 3, &indices.front(), D3DFMT_INDEX32, &vertices.front(), sizeof(nitVERTEX));
 }
 
-void IModel::Load(wchar_t* filename)
+void IModel::DrawVertexColor(IDirect3DDevice9* device)
+{
+	//device->SetVertexDeclaration(nitVERTEX::decl);
+	device->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vertices_color.size(), indices.size() / 3, &indices.front(), D3DFMT_INDEX32, &vertices_color.front(), sizeof(nitVERTEXCOLOR));
+}
+
+void IModel::DrawLines(IDirect3DDevice9* device)
+{
+	//device->SetVertexDeclaration(nitVERTEX::decl);
+	device->DrawPrimitiveUP(D3DPT_LINELIST, vertices_color.size() / 2, &vertices_color.front(), sizeof(nitVERTEXCOLOR));
+}
+
+void IModel::LoadVertex(char* filename)
 {
 	shared_ptr<Loadernit> nit(new Loadernit());
 
-	nit->Load(filename, vertices, indices);
+	nit->LoadVertex(filename, vertices, indices);
+}
+
+void IModel::LoadVertexColor(char* filename)
+{
+	shared_ptr<Loadernit> nit(new Loadernit());
+
+	nit->LoadVertexColor(filename, vertices_color, indices);
 }

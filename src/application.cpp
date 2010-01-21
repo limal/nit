@@ -28,12 +28,13 @@ Lukasz Wolnik lukasz.wolnik@o2.pl
 
 using namespace nit;
 
-IApplication::IApplication(const unsigned int width, const unsigned int height, const bool windowed, const bool show_fps)
-	:	hWnd(0),
-		num_frames(0),
-		show_fps(show_fps),
-		time_elapsed(0),
-		windowed(windowed)
+IApplication::IApplication(const unsigned int width, const unsigned int height, const bool antialiasing, const bool windowed, const bool show_fps) :
+	antialiasing(antialiasing),
+	hWnd(0),
+	num_frames(0),
+	show_fps(show_fps),
+	time_elapsed(0),
+	windowed(windowed)
 {
 	hWnd = NULL;
 	minimized = false;
@@ -59,6 +60,11 @@ void IApplication::AddOnCreated(void* delegate)
 void IApplication::AddRenderFunction(void* delegate, unsigned int priority)
 {
 	gfx->AddOnRender(delegate, priority);
+}
+
+void IApplication::AddUpdatingFunction(void* delegate)
+{
+	updating += *((Delegate*)delegate);
 }
 
 bool IApplication::CreateMainWindow(wchar_t* title, int cmdShow)
@@ -136,6 +142,9 @@ void IApplication::CenterWindow(HWND hWnd, int _x, int _y)
 
 void IApplication::Update()
 {
+	//update(
+	//updating(NULL, NULL);
+
 	if (!gfx->IsDeviceLost())
 	{
 		gfx->Render(timer->GetDelta());
@@ -165,7 +174,7 @@ void IApplication::Initialize()
 
 void IApplication::InitializeGraphics()
 {
-	gfx = shared_ptr<Graphics>(new Graphics(windowed));
+	gfx = shared_ptr<Graphics>(new Graphics(antialiasing, windowed));
 	if (gfx->Initialize(update->width, update->height, hWnd) == E_FAIL)
 	{
 		MessageBox(NULL, L"Couldn't initalize DirectX interface!", L"Error", MB_ICONERROR);
@@ -236,6 +245,8 @@ void IApplication::ProcessMouseMButtonDown(WPARAM wParam, LPARAM lParam)
 {
 	update->mouse_middle_down = true;
 	update->mouse_middle_up = false;
+
+	update->mouse_params = wParam;
 }
 
 void IApplication::ProcessMouseMButtonUp(WPARAM wParam, LPARAM lParam)

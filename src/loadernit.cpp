@@ -40,91 +40,143 @@ void Loadernit::Initialize()
 {
 }
 
-void Loadernit::Load(wchar_t* filename, std::vector<nitVERTEX>& vertices, std::vector<WORD>& indices)
+void Loadernit::LoadVertex(char* filename, std::vector<nitVERTEX>& vertices, std::vector<int>& indices)
 {
-	float* s(new float[65536]);
-	float* t(new float[65536]);
-	float* nx = new float[65536];
-	float* ny = new float[65536];
-	float* nz = new float[65536];
-	unsigned int num_tex = 0, num_nor = 0;
+	FILE* file;
+	vector<VECTOR3> normals;
+	vector<VECTOR2> texcoords;
+	vector<POLYLIST> polylist;
+	int num_ver, num_nor, num_tex, num_poly;
 
 	vertices.clear();
 	indices.clear();
 
-	std::ifstream ifs(filename);
-
-	while (!ifs.eof())
+	fopen_s(&file, filename, "rb");	
+	// positions
+	fread(&num_ver, sizeof(int), 1, file);
+	num_ver /= 3;
+	for (int i = 0; i < num_ver; ++i)
 	{
-		const unsigned int MAX_BUFFER = 4096;
-		char buffer[MAX_BUFFER];
-		std::stringstream ss;
-
-		ifs.getline(buffer, MAX_BUFFER);
-		ss.str(buffer);
-
-		std::string token;
-		ss >> token;
-
-		if (token == "v")
-		{
-			float x, y, z;
-			ss >> x >> y >> z;
-
-			nitVERTEX v;
-			v.pos = D3DXVECTOR3(x, y, z);
-			v.tex0 = D3DXVECTOR2(0, 0);
-			v.normal = D3DXVECTOR3(0, 0, 0);
-
-			vertices.push_back(v);
-		}
-		if (token == "vt")
-		{
-			ss >> s[num_tex] >> t[num_tex];
-			t[num_tex] = 1.0f - t[num_tex];
-			num_tex++;
-		}
-		if (token == "vn")
-		{
-			ss >> nx[num_nor] >> ny[num_nor] >> nz[num_nor];
-			num_nor++;
-		}
-		if (token == "f")
-		{
-			unsigned int ver[3], tex[3], nor[3];
-			char delim = 0;
-
-			ss >> ver[0] >> delim >> tex[0] >> delim >> nor[0] >>
-				ver[1] >> delim >> tex[1] >> delim >> nor[1] >>
-				ver[2] >> delim >> tex[2] >> delim >> nor[2];
-			--ver[0];
-			--ver[1];
-			--ver[2];
-			--tex[0];
-			--tex[1];
-			--tex[2];
-			--nor[0];
-			--nor[1];
-			--nor[2];
-
-			indices.push_back(ver[0]);
-			indices.push_back(ver[1]);
-			indices.push_back(ver[2]);
-			vertices[ver[0]].tex0.x = s[tex[0]];
-			vertices[ver[0]].tex0.y = t[tex[0]];
-			vertices[ver[0]].normal = D3DXVECTOR3(nx[nor[0]], ny[nor[0]], nz[nor[0]]);
-			vertices[ver[1]].tex0.x = s[tex[1]];
-			vertices[ver[1]].tex0.y = t[tex[1]];
-			vertices[ver[1]].normal = D3DXVECTOR3(nx[nor[1]], ny[nor[1]], nz[nor[1]]);
-			vertices[ver[2]].tex0.x = s[tex[2]];
-			vertices[ver[2]].tex0.y = t[tex[2]];
-			vertices[ver[2]].normal = D3DXVECTOR3(nx[nor[2]], ny[nor[2]], nz[nor[2]]);
-		}
+		VECTOR3 v;
+		nitVERTEX nit_v;
+		fread(&v, sizeof(double), 3, file);
+		nit_v.pos.x = (float)v.x;
+		nit_v.pos.y = (float)v.y;
+		nit_v.pos.z = (float)v.z;
+		vertices.push_back(nit_v);
+	}
+	// normals
+	fread(&num_nor, sizeof(int), 1, file);
+	num_nor /= 3;	
+	for (int i = 0; i < num_nor; ++i)
+	{
+		VECTOR3 n;
+		fread(&n, sizeof(double), 3, file);
+		normals.push_back(n);
+	}
+	// uvs
+	fread(&num_tex, sizeof(int), 1, file);
+	num_tex /= 2;	
+	for (int i = 0; i < num_tex; ++i)
+	{
+		VECTOR2 t;
+		fread(&t, sizeof(double), 2, file);
+		texcoords.push_back(t);
+	}
+	// polylist
+	fread(&num_poly, sizeof(int), 1, file);
+	for (int i = 0; i < num_poly; ++i)
+	{
+		POLYLIST pl;
+		fread(&pl.v1, sizeof(int), 2, file);
+		fread(&pl.v2, sizeof(int), 2, file);
+		fread(&pl.v3, sizeof(int), 2, file);
+		polylist.push_back(pl);
 	}
 
-	delete[] s;
-	delete[] t;
-	delete[] nx;
-	delete[] ny;
-	delete[] nz;
+	// assembling
+	for (int i = 0; i < num_poly; ++i)
+	{
+		POLYLIST& pl = polylist[i];
+		nitVERTEX& v1 = vertices[pl.v1.vn];
+		nitVERTEX& v2 = vertices[pl.v2.vn];
+		nitVERTEX& v3 = vertices[pl.v3.vn];
+
+		v1.normal = D3DXVECTOR3((float)normals[pl.v1.vn].x, (float)normals[pl.v1.vn].y, (float)normals[pl.v1.vn].z);
+		v1.tex0 = D3DXVECTOR2((float)texcoords[pl.v1.t].u, (float)texcoords[pl.v1.t].v);
+
+		v2.normal = D3DXVECTOR3((float)normals[pl.v2.vn].x, (float)normals[pl.v2.vn].y, (float)normals[pl.v2.vn].z);
+		v2.tex0 = D3DXVECTOR2((float)texcoords[pl.v2.t].u, (float)texcoords[pl.v2.t].v);
+
+		v3.normal = D3DXVECTOR3((float)normals[pl.v3.vn].x, (float)normals[pl.v3.vn].y, (float)normals[pl.v3.vn].z);
+		v3.tex0 = D3DXVECTOR2((float)texcoords[pl.v3.t].u, (float)texcoords[pl.v3.t].v);
+
+		indices.push_back(pl.v1.vn);
+		indices.push_back(pl.v2.vn);
+		indices.push_back(pl.v3.vn);
+	}
+
+	fclose(file);
+}
+
+void Loadernit::LoadVertexColor(char* filename, std::vector<nitVERTEXCOLOR>& vertices_color, std::vector<int>& indices)
+{
+	FILE* file;
+	vector<VECTOR3> normals;
+	vector<VECTOR2> texcoords;
+	vector<POLYLIST> polylist;
+	int num_ver, num_nor, num_tex, num_poly;
+
+	vertices_color.clear();
+	indices.clear();
+
+	fopen_s(&file, filename, "rb");	
+	// positions
+	fread(&num_ver, sizeof(int), 1, file);
+	num_ver /= 3;
+	for (int i = 0; i < num_ver; ++i)
+	{
+		VECTOR3 v;
+		nitVERTEXCOLOR nit_v;
+		fread(&v, sizeof(double), 3, file);
+		nit_v.pos.x = (float)v.x;
+		nit_v.pos.y = (float)v.y;
+		nit_v.pos.z = (float)v.z;
+		vertices_color.push_back(nit_v);
+	}
+	// normals
+	fread(&num_nor, sizeof(int), 1, file);
+	fseek(file, num_nor * sizeof(double), SEEK_CUR);
+	// uvs
+	fread(&num_tex, sizeof(int), 1, file);
+	fseek(file, num_tex * sizeof(double), SEEK_CUR);
+	// polylist
+	fread(&num_poly, sizeof(int), 1, file);
+	for (int i = 0; i < num_poly; ++i)
+	{
+		POLYLIST pl;
+		fread(&pl.v1, sizeof(int), 2, file);
+		fread(&pl.v2, sizeof(int), 2, file);
+		fread(&pl.v3, sizeof(int), 2, file);
+		polylist.push_back(pl);
+	}
+
+	// assembling
+	for (int i = 0; i < num_poly; ++i)
+	{
+		POLYLIST& pl = polylist[i];
+		nitVERTEXCOLOR& v1 = vertices_color[pl.v1.vn];
+		nitVERTEXCOLOR& v2 = vertices_color[pl.v2.vn];
+		nitVERTEXCOLOR& v3 = vertices_color[pl.v3.vn];
+
+		v1.col = 0xffacbd6c;
+		v2.col = v1.col;
+		v3.col = v1.col;
+
+		indices.push_back(pl.v1.vn);
+		indices.push_back(pl.v2.vn);
+		indices.push_back(pl.v3.vn);
+	}
+
+	fclose(file);
 }

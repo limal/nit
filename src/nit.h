@@ -37,8 +37,9 @@ struct nitGraphics
 	virtual  unsigned int GetWidth() = 0;
 	virtual IDirect3DTexture9* GetTexture(unsigned int id) = 0;
 	virtual void LoadTexture(unsigned int id, wchar_t* filename) = 0;
-	virtual void SetD3DVERTEXDeclaration() = 0;
-	virtual void SetD3DVERTEXCOLORDeclaration() = 0;
+	virtual void SetClearColor(D3DCOLOR color) = 0;
+	virtual void SetnitVERTEXDeclaration() = 0;
+	virtual void SetnitVERTEXCOLORDeclaration() = 0;
 	virtual void Write(const char* text_, float x, float y, float z = 0) = 0;
 };
 
@@ -48,6 +49,7 @@ struct nitUPDATE
 	bool prevKeys[256];
 	unsigned int key_pressed;
 	unsigned int key_params;
+	unsigned int mouse_params;
 	HWND hWnd;
 	int mx, my;
 	int wheel_x, wheel_y;
@@ -107,8 +109,10 @@ struct Application
 {
 	virtual void AddOnCreated(void* delegate) = 0;
 	virtual void AddRenderFunction(void* delegate, unsigned int priority) = 0;
+	virtual void AddUpdatingFunction(void* delegate) = 0;
 	virtual nitUPDATE* Create(wchar_t* title, int nShowCmd) = 0;
 	virtual nitGraphics* GetGraphics() = 0;
+	virtual nitUPDATE* GetUPDATE() = 0;
 	virtual void Update() = 0;
 };
 
@@ -130,15 +134,24 @@ struct Effect
 
 extern "C" nitAPI Effect* APIENTRY nitCreateEffect(nitGraphics* gfx, wchar_t* filename);
 
-class Model
+class nitModel
 {
 	public:
-		virtual void AddTriangle(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3) = 0;
-		virtual void Draw(IDirect3DDevice9* device) = 0;
-		virtual void Load(wchar_t* filename) = 0;
+		virtual void AddLine(float x1, float y1, float z1, float x2, float y2, float z2, D3DCOLOR color1, D3DCOLOR color2) = 0;
+		virtual void AddTriangle(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3) = 0;		
+		virtual void AddVertex(float x, float y, float z, D3DCOLOR color) = 0;
+		virtual void DrawVertex(IDirect3DDevice9* device) = 0;
+		virtual void DrawVertexColor(IDirect3DDevice9* device) = 0;
+		virtual void DrawLines(IDirect3DDevice9* device) = 0;
+		virtual nitVERTEX* GetVertices() = 0;
+		virtual int* GetIndices() = 0;
+		virtual unsigned int GetNumIndices() = 0;
+		virtual unsigned int GetNumVertices() = 0;
+		virtual void LoadVertex(char* filename) = 0;
+		virtual void LoadVertexColor(char* filename) = 0;
 };
 
-extern "C" nitAPI Model* APIENTRY nitCreateModel();
+extern "C" nitAPI nitModel* APIENTRY nitCreateModel();
 
 class Gui
 {
@@ -153,4 +166,4 @@ class Gui
 		virtual void RenderBitmap(unsigned int key, const float x, const float y, const float z) = 0;
 };
 
-extern "C" nitAPI Application* APIENTRY nitCreateApplication(unsigned int width, unsigned int height, bool windowed, bool show_fps);
+extern "C" nitAPI Application* APIENTRY nitCreateApplication(unsigned int width, unsigned int height, bool antialiasing, bool windowed, bool show_fps);

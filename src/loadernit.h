@@ -26,13 +26,34 @@ struct nitVERTEX;
 
 namespace nit
 {
+	struct VECTOR2
+	{
+		double u, v;
+	};
+
+	struct VECTOR3
+	{
+		double x, y, z;
+	};
+
+	struct POLY
+	{
+		int vn, t;
+	};
+
+	struct POLYLIST
+	{
+		POLY v1, v2, v3;
+	};
+
 	class Loadernit
 	{
 		public:
 			Loadernit();
 			~Loadernit();
 
-			void Load(wchar_t* filename, std::vector<nitVERTEX>& vertices, std::vector<WORD>& indices);
+			void LoadVertex(char* filename, std::vector<nitVERTEX>& vertices, std::vector<int>& indices);
+			void LoadVertexColor(char* filename, std::vector<nitVERTEXCOLOR>& vertices_color, std::vector<int>& indices);
 
 		protected:
 			void Initialize();

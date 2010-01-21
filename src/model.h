@@ -26,19 +26,30 @@ struct nitVERTEX;
 
 namespace nit
 {
-	class IModel : public Model
+	class IModel : public nitModel
 	{
 		public:
 			IModel();
 			~IModel();
 
-			void AddTriangle(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3);
-			void Draw(IDirect3DDevice9* device);
-			void Load(wchar_t* filename);
-
+			
+			void AddLine(float x1, float y1, float z1, float x2, float y2, float z2, D3DCOLOR color1, D3DCOLOR color2);
+			void AddTriangle(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3);			
+			void AddVertex(float x, float y, float z, D3DCOLOR color);
+			void DrawVertex(IDirect3DDevice9* device);
+			void DrawVertexColor(IDirect3DDevice9* device);
+			void DrawLines(IDirect3DDevice9* device);
+			nitVERTEX* GetVertices() { return &vertices.front(); }			
+			int* GetIndices() { return &indices.front(); }
+			unsigned int GetNumIndices() { return indices.size(); }
+			unsigned int GetNumVertices() { return vertices.size(); }
+			void Line(float x1, float y1, float z1, float x2, float y2, float z2, float width);
+			void LoadVertex(char* filename);
+			void LoadVertexColor(char* filename);
 
 		protected:
+			std::vector<nitVERTEXCOLOR> vertices_color;
 			std::vector<nitVERTEX> vertices;
-			std::vector<WORD> indices;
+			std::vector<int> indices;
 	};
 }

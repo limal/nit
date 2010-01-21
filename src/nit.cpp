@@ -26,9 +26,9 @@ Lukasz Wolnik lukasz.wolnik@o2.pl
 #include "graphics.h"
 #include "model.h"
 
-nitAPI Application* APIENTRY nitCreateApplication(unsigned int width, unsigned int height, bool windowed, bool show_fps)
+nitAPI Application* APIENTRY nitCreateApplication(unsigned int width, unsigned int height, bool antialiasing, bool windowed, bool show_fps)
 {
-	return new nit::IApplication(width, height, windowed, show_fps);
+	return new nit::IApplication(width, height, antialiasing, windowed, show_fps);
 }
 
 nitAPI Effect* APIENTRY nitCreateEffect(nitGraphics* gfx, wchar_t* filename)
@@ -36,7 +36,7 @@ nitAPI Effect* APIENTRY nitCreateEffect(nitGraphics* gfx, wchar_t* filename)
 	return new nit::IEffect((nit::Graphics*)gfx, filename);
 }
 
-nitAPI Model* APIENTRY nitCreateModel()
+nitAPI nitModel* APIENTRY nitCreateModel()
 {
 	return new nit::IModel();
 }
